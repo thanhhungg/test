@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+        <script src="https://cdn.tailwindcss.com"></script>
+<title>Insert title here</title>
+</head>
+<body>
+	<div class="min-w-[100vh] min-h-[100vh] flex justify-center items-center bg-[#47b1c647]"> 
+    <div class="border-2 border-[#000] px-[16px] py-[10px] rounded-[8px]">
+    	<h2 th:text="${message}" class="mb-[20px] text-center font-semibold text-[24px]">Danh gia nhom abc</h2>
+    	<form action="/result" method="post" class="block">
+        	<label for="userInput">Nhập điểm:</label>
+<input type="number" id="userInput" name="userInput" th:value="${userInput}" required class="border-2 border-[#000]" />
+        	  <input type="hidden" id="userId" name="userId" th:value="${name}">
+        	<button type="submit" class="block border-2 border-[#000] rounded-[6px] px-[10px] py-[3px] mx-[auto] mt-[10px]">Submit</button>
+    	</form>
+    </div>
+    </div>
+</body>
+</html>

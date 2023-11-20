@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.6/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.6/dist/sweetalert2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.js"></script>
+    <title>Đánh Giá Nhóm ABC</title>
+</head>
+<body class="bg-gray-100">
+
+<div class="container mx-auto p-8">
+    <h2 th:text="${message}" class="text-3xl font-semibold text-center mb-8">Bảng Tổng Kết Đánh Giá Nhóm ABC</h2>
+
+    <div class="flex justify-center mb-8">
+        <table class="w-full border-collapse border border-gray-700">
+            <thead>
+            <tr class="bg-gray-200">
+                <th class="py-2 px-4 border border-gray-700">Tên Nhóm</th>
+                <th class="py-2 px-4 border border-gray-700">Điểm</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Thymeleaf iteration to display data -->
+            <tr th:each="d : ${diemList}" class="hover:bg-gray-100">
+                <td class="py-2 px-4 border border-gray-700 text-center" th:text="${d.id}"></td>
+                <td class="py-2 px-4 border border-gray-700 text-center" th:text="${d.diem}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Your existing form for sending email -->
+    <div class="max-w-md mx-auto bg-white rounded-md overflow-hidden shadow-md p-6 mt-8">
+        <form id="emailForm" action="/send-email" method="post" class="space-y-4">
+            <!-- Add hidden input fields for dynamic data -->
+            <input type="hidden" th:each="d : ${diemList}" name="teamNames" th:value="${d.id}">
+            <input type="hidden" th:each="d : ${diemList}" name="scores" th:value="${d.diem}">
+
+            <label for="email" class="block text-sm font-medium text-gray-700">Nhập địa chỉ Email:</label>
+            <input type="email" id="email" name="email" required class="border-2 border-gray-300 rounded-md p-2 w-full">
+
+            <button type="button" onclick="sendEmail()" class="bg-blue-500 text-white px-4 py-2 rounded-md transition-all duration-300 hover:bg-blue-600">
+                Gửi Email
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function sendEmail() {
+        const email = document.getElementById('email').value;
+
+        // Show progress bar
+        NProgress.start();
+
+        // Collect dynamic data from hidden fields
+        const teamNames = Array.from(document.getElementsByName('teamNames')).map(input => input.value);
+        const scores = Array.from(document.getElementsByName('scores')).map(input => input.value);
+
+        // Send AJAX request using fetch
+        fetch('/send-email', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, teamNames, scores }),
+        })
+        .then(response => {
+            // Check the response status
+            if (!response.ok) {
+                throw new Error('Có lỗi xảy ra khi gửi email.');
+            }
+            // Hide progress bar on successful response
+            NProgress.done();
+
+            // Display success message
+            Swal.fire({
+                title: 'Email đã được gửi!',
+                text: 'Bảng điểm đã được gửi đến địa chỉ email ' + email,
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+        })
+        .catch(error => {
+            // Hide progress bar on error
+            NProgress.done();
+
+            // Display error message
+            Swal.fire({
+                title: 'Lỗi',
+                text: error.message,
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        });
+    }
+</script>
+
+</body>
+</html>
