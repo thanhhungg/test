@@ -151,7 +151,7 @@ public class DiemController {
             helper.addAttachment("BangDiemNhom.xlsx", new ByteArrayResource(excelBytes));
 
             // Send email
-            mailSender.send(message);
+            mailSender.send(message); 
 
             // Return successful response
             return new ResponseEntity<>("Email đã được gửi!", HttpStatus.OK);
